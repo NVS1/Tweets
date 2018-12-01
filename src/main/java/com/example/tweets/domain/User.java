@@ -20,6 +20,7 @@ public class User implements UserDetails {
     private String username;
     @NotBlank(message = "Password can't be empty")
     private String password;
+    @NotBlank(message = "Name can't be empty")
     private String name;
     private boolean active;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -137,5 +138,16 @@ public class User implements UserDetails {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

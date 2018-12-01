@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @MultipartConfig(maxFileSize = 1024 * 1024 * 50)
@@ -54,9 +52,11 @@ public class MessageController {
                              @AuthenticationPrincipal User user,
                              @RequestParam(value = "file", required = false)MultipartFile file) {
         message.setAuthor(user);
+        message.setDate(new Date());
         if (bindingResult.hasErrors()){
             Map<String, String> errorMap = ControllerUtil.getErrors(bindingResult);
-            model.addAttribute("error", errorMap);
+            model.mergeAttributes(errorMap);
+            model.addAttribute("message", message);
         } else {
             if (file != null && !file.isEmpty()) {
                 Image image = new Image();
@@ -67,11 +67,11 @@ public class MessageController {
                     e.printStackTrace();
                 }
             }
-            model.addAttribute("");
+            model.addAttribute("message", null);
             messageService.save(message);
         }
-
-        return "redirect:/";
+        model.addAttribute("messages", messageService.findAll());
+        return "index";
     }
 
     @GetMapping("/image/{id}")

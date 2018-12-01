@@ -1,7 +1,5 @@
 package com.example.tweets.domain;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -16,9 +14,10 @@ public class Message  {
     @NotBlank(message = "Please, enter your message")
     @Length(max = 255, message = "Message too long")
     private String text;
+    @Length(max = 255, message = "Tag too long")
     private String tag;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date = new Date();
+    private Date date;
     @ManyToOne(fetch = FetchType.EAGER)
     private User author;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -3,7 +3,6 @@ package com.example.tweets.service;
 import com.example.tweets.domain.Role;
 import com.example.tweets.domain.User;
 import com.example.tweets.repos.UserRepo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,15 +72,14 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public void updateUser(String name,
-                           String username,
-                           String email,
+    public boolean updateUser(User userEdit,
                            Map<String, String> form,
                            String active,
                            User user) {
-        user.setName(name);
-        user.setUsername(username);
-        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(userEdit.getPassword()));
+        user.setName(userEdit.getName());
+        user.setUsername(userEdit.getUsername());
+        user.setEmail(userEdit.getEmail());
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Enum::toString)
                 .collect(Collectors.toSet());
@@ -98,6 +96,15 @@ public class UserService implements UserDetailsService {
         }
 
         userRepo.save(user);
+        return true;
+    }
+
+    public boolean checkUserByUsername(User userEdit, User user) {
+        User checkedUser = userRepo.findByUsername(userEdit.getUsername());
+        if (checkedUser != null && !userEdit.getUsername().equals(user.getUsername())){
+            return false;
+        }
+        return true;
     }
 
     @Override
