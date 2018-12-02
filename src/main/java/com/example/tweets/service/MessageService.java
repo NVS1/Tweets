@@ -43,7 +43,9 @@ public class MessageService {
     }
 
     public void deleteMessageImage (Message message){
-        imageRepo.delete(message.getImage());
-        message.setImage(null);
+        if (message.getImage()!=null){
+            imageRepo.delete(message.getImage());
+            message.setImage(null);
+        }
     }
 }
