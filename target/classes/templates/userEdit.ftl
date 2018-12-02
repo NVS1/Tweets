@@ -1,4 +1,5 @@
 <#import "parts/common.ftl" as c>
+<#import "parts/editProfile.ftl" as ep>
 <@c.page>
 <strong>User editor</strong>
 <div class="form-group mt-3">
@@ -6,17 +7,17 @@
         <div class="form-group">
             <strong>Id: ${user.id}</strong><br>
         </div>
-        <input type="hidden", name="id", value="${user.id}">
-       <div class="form-group">
-           <div class="input-group">
-               <div class="input-group-prepend">
-                   <span class="input-group-text">Username and name and email</span>
-               </div>
-               <input type="text" class="form-control" name="username" value="${user.username}" placeholder="username">
-               <input type="text" class="form-control" name="name" value="${user.name}" placeholder="name">
-               <input type="email" class="form-control" name="email" value="${user.email?if_exists}" placeholder="email">
-           </div>
-       </div>
+        <input type="hidden" name="id" value="${user.id}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control ${(usernameError??)?string('is-invalid', '')}" id="username" name="username" placeholder="Username" value="<#if userEdit??>${userEdit.username}<#else>${user.username}</#if>">
+             <#if usernameError??>
+                    <div class="invalid-feedback">
+                        ${usernameError}
+                    </div>
+             </#if>
+        </div>
+        <@ep.editProfile/>
         <#list roles as role>
         <div class="form-group">
             <div class="custom-control custom-checkbox">

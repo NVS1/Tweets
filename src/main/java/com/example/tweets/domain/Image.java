@@ -9,6 +9,7 @@ public class Image {
     private Long id;
     @Column(columnDefinition = "LONGBLOB", length = 1024*1024*50)
     private byte[] content;
+    private String originalFileName;
 
     public Long getId() {
         return id;
@@ -24,5 +25,13 @@ public class Image {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 }

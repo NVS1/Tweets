@@ -41,8 +41,10 @@ public class MainController {
     @GetMapping("/activate/{code}")
     public String activate (@PathVariable("code") String code, Model model){
         if (userService.isActivated(code)) {
-            model.addAttribute("message", "User successful activated!");
+            model.addAttribute("type", "success");
+            model.addAttribute("message", "Successful");
         } else {
+            model.addAttribute("type", "danger");
             model.addAttribute("message", "Activation code is invalid");
         }
         return "login";

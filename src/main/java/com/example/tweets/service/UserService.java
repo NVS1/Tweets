@@ -60,11 +60,11 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    private boolean sendMessage(User user, String subject, String reason) {
+    private boolean sendMessage(User user, String subject, String suffix) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello %s! Please visit next link: %s/activate/%s for %s",
-                    user.getName(), activationLink, user.getActivationCode(), reason
+                    user.getName(), activationLink, user.getActivationCode(), suffix
             );
             mailSender.send(user.getEmail(), subject, message);
             return true;
@@ -101,10 +101,7 @@ public class UserService implements UserDetailsService {
 
     public boolean checkUserByUsername(User userEdit, User user) {
         User checkedUser = userRepo.findByUsername(userEdit.getUsername());
-        if (checkedUser != null && !userEdit.getUsername().equals(user.getUsername())){
-            return false;
-        }
-        return true;
+        return checkedUser == null || userEdit.getUsername().equals(user.getUsername());
     }
 
     @Override
@@ -145,7 +142,7 @@ public class UserService implements UserDetailsService {
             user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(password));
             user.setActive(false);
-            if (sendMessage(user, "Change password", "change password")) {
+            if (sendMessage(user, "Change password", "change password. Your password: "+password)) {
                 userRepo.save(user);
                 return true;
             }

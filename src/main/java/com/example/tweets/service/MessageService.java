@@ -6,6 +6,7 @@ import com.example.tweets.repos.ImageRepo;
 import com.example.tweets.repos.MessageRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -23,13 +24,26 @@ public class MessageService {
     }
 
     public List<Message> findAll (){
-        return messageRepo.findAll();
+        List<Message> all = messageRepo.findAll();
+        all.sort(Comparator.comparing(Message::getDate).reversed());
+        return all;
     }
 
     public List<Message> findByTag (String tag){
-        return messageRepo.findByTag(tag);
+        List<Message> byTag = messageRepo.findByTag(tag);
+        byTag.sort(Comparator.comparing(Message::getDate).reversed());
+        return byTag;
     }
     public Image getImageById (Long id){
         return imageRepo.getOne(id);
+    }
+
+    public void deleteMessage(Message message) {
+        messageRepo.delete(message);
+    }
+
+    public void deleteMessageImage (Message message){
+        imageRepo.delete(message.getImage());
+        message.setImage(null);
     }
 }
