@@ -6,10 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class User implements UserDetails {
@@ -133,6 +130,7 @@ public class User implements UserDetails {
     }
 
     public List<Message> getMessages() {
+        messages.sort(Comparator.comparing(Message::getDate).reversed());
         return messages;
     }
 

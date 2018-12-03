@@ -49,4 +49,9 @@ public class MainController {
         }
         return "login";
     }
+
+    @GetMapping("/home")
+    public String getHomePage (){
+        return "home";
+    }
 }

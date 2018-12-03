@@ -26,8 +26,8 @@
             </#list>
             </td>
             <td>${user.active?string("yes", "no")}</td>
-            <td><a class="btn btn-primary" role="button" href="/admin/user/${user.id}">EDIT</a> </td>
-            <td><a class="btn btn-danger" role="button" href="/admin/delete/${user.id}">DELETE</a> </td>
+            <td><a class="btn btn-primary" role="button" href="/admin/user/${user.id}"><i class="fas fa-pen"></i></a> </td>
+            <td><a class="btn btn-danger" role="button" href="/admin/delete/${user.id}"><i class="fas fa-ban"></i></a> </td>
         </tr>
         </#list>
         </tbody>

@@ -19,7 +19,7 @@
 
 <#macro logout>
     <form action="/logout" method="post">
-        <button class="btn btn-primary" type="submit">Sign Out</button>
+        <button class="btn btn-primary" type="submit"><i class="fas fa-sign-out-alt"></i></button>
     </form>
 </#macro>
 

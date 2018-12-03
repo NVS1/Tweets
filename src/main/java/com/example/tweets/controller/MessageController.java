@@ -5,7 +5,6 @@ import com.example.tweets.domain.Message;
 import com.example.tweets.domain.User;
 import com.example.tweets.service.MessageService;
 import com.example.tweets.util.ControllerUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
@@ -30,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@MultipartConfig(maxFileSize = 1024 * 1024 * 50)
 public class MessageController {
     @Autowired
     private MessageService messageService;
@@ -91,11 +88,12 @@ public class MessageController {
 
     @GetMapping("/tweet/delete/{id}")
     public String deleteMessage (@PathVariable("id") Message message,
-                                 @AuthenticationPrincipal User user){
+                                 @AuthenticationPrincipal User user,
+                                 @RequestParam String url){
         if (message.getAuthor().equals(user)){
             messageService.deleteMessage(message);
         }
-        return "redirect:/";
+        return "redirect:"+url;
     }
 
     @PostMapping("/tweet/edit/{id}")
@@ -104,7 +102,8 @@ public class MessageController {
                                @PathVariable("id") Message message,
                                @AuthenticationPrincipal User user,
                                @RequestParam(value = "file", required = false) MultipartFile file,
-                               @RequestParam(required = false) String delete){
+                               @RequestParam(required = false) String delete,
+                               @RequestParam String currentUrl){
 
         if (message.getAuthor().equals(user)){
            if (!StringUtils.isEmpty(text)){
@@ -120,6 +119,15 @@ public class MessageController {
            message.setDate(new Date());
            messageService.save(message);
         }
-        return "redirect:/";
+        return "redirect:"+currentUrl;
+    }
+
+    @GetMapping("/tweets/{id}")
+    public String userTweets (@PathVariable("id") User user,
+                              @AuthenticationPrincipal User currentUser,
+                              Model model){
+        model.addAttribute("isCurrentUser", user.equals(currentUser));
+        model.addAttribute("messages", user.getMessages());
+        return "home";
     }
 }
