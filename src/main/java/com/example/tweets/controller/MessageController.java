@@ -126,8 +126,13 @@ public class MessageController {
     public String userTweets (@PathVariable("id") User user,
                               @AuthenticationPrincipal User currentUser,
                               Model model){
+
+        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+        model.addAttribute("subscribersCount", user.getSubscribers().size());
+        model.addAttribute("profile", user);
         model.addAttribute("isCurrentUser", user.equals(currentUser));
         model.addAttribute("messages", user.getMessages());
+        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
         return "home";
     }
 }

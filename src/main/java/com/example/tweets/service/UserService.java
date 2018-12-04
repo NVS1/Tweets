@@ -1,5 +1,6 @@
 package com.example.tweets.service;
 
+import com.example.tweets.domain.Image;
 import com.example.tweets.domain.Role;
 import com.example.tweets.domain.User;
 import com.example.tweets.repos.UserRepo;
@@ -11,7 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,10 +76,10 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean updateUser(User userEdit,
-                           Map<String, String> form,
-                           String active,
-                           User user) {
-        user.setPassword(passwordEncoder.encode(userEdit.getPassword()));
+                              Map<String, String> form,
+                              String active,
+                              User user) {
+        user.setPassword(userEdit.getPassword());
         user.setName(userEdit.getName());
         user.setUsername(userEdit.getUsername());
         user.setEmail(userEdit.getEmail());
@@ -142,11 +145,36 @@ public class UserService implements UserDetailsService {
             user.setActivationCode(UUID.randomUUID().toString());
             user.setPassword(passwordEncoder.encode(password));
             user.setActive(false);
-            if (sendMessage(user, "Change password", "change password. Your password: "+password)) {
+            if (sendMessage(user, "Change password", "change password. Your password: " + password)) {
                 userRepo.save(user);
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean setAvatar(MultipartFile file, User user) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            Image avatar = new Image();
+            avatar.setContent(file.getBytes());
+            avatar.setOriginalFileName(file.getOriginalFilename());
+            user.setAvatar(avatar);
+            userRepo.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    public void subscribe(User user, User currentUser) {
+        if (!currentUser.equals(user)) {
+            user.getSubscribers().add(currentUser);
+            userRepo.save(user);
+        }
+    }
+    public void unsubscribe(User user, User currentUser) {
+        if (!currentUser.equals(user)) {
+            user.getSubscribers().remove(currentUser);
+            userRepo.save(user);
+        }
     }
 }

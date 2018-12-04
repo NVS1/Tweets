@@ -30,8 +30,49 @@ public class User implements UserDetails {
     private String activationCode;
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Message> messages;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "avatar_id")
+    private Image avatar;
+    @ManyToMany
+    @JoinTable(name = "subscriber_subscriptions",
+            joinColumns = @JoinColumn(name = "subscriptions"),
+            inverseJoinColumns = @JoinColumn(name = "subscribers"))
+    private Set<User> subscribers = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "subscriber_subscriptions",
+            joinColumns = @JoinColumn(name = "subscribers"),
+            inverseJoinColumns = @JoinColumn(name = "subscriptions"))
+    private Set<User> subscriptions = new HashSet<>();
 
     public User() {
+    }
+
+    public Image getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Image avatar) {
+        this.avatar = avatar;
+    }
+    public Long getAvatarId (){
+        return avatar.getId();
+    }
+
+    public Set<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(Set<User> subscribers) {
+        this.subscribers = subscribers;
+    }
+
+    public Set<User> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<User> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     public boolean isAdmin (){

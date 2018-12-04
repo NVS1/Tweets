@@ -8,9 +8,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -45,5 +49,25 @@ public class UserController {
             return "profile";
         }
         return "redirect:/profile";
+    }
+
+    @PostMapping("/avatar")
+    public String setAvatar (@AuthenticationPrincipal User user,
+                             @RequestParam(value = "file", required = false) MultipartFile file,
+                             @RequestParam String url) throws IOException {
+        System.out.println(file.getOriginalFilename());
+        userService.setAvatar(file, user);
+        return "redirect:"+url;
+    }
+    @GetMapping("user/{subscribe}/{id}")
+    public String subscribe (@PathVariable String subscribe,
+                             @PathVariable("id") User user,
+                             @AuthenticationPrincipal User currentUser){
+        if (subscribe.equals("subscribe")){
+            userService.subscribe(user, currentUser);
+        } else if (subscribe.equals("unsubscribe")){
+            userService.unsubscribe(user, currentUser);
+        }
+        return "redirect:/tweets/"+user.getId();
     }
 }
