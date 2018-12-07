@@ -8,6 +8,7 @@
             <strong>Id: ${user.id}</strong><br>
         </div>
         <input type="hidden" name="id" value="${user.id}">
+        <input type="hidden" name="password" value="${user.password}">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control ${(usernameError??)?string('is-invalid', '')}" id="username" name="username" placeholder="Username" value="<#if userEdit??>${userEdit.username}<#else>${user.username}</#if>">

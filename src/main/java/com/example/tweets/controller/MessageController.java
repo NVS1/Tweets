@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class MessageController {
@@ -125,14 +126,18 @@ public class MessageController {
     @GetMapping("/tweets/{id}")
     public String userTweets (@PathVariable("id") User user,
                               @AuthenticationPrincipal User currentUser,
-                              Model model){
+                              Model model,
+                              @RequestParam(required = false, defaultValue = "") String filter){
 
-        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-        model.addAttribute("subscribersCount", user.getSubscribers().size());
-        model.addAttribute("profile", user);
-        model.addAttribute("isCurrentUser", user.equals(currentUser));
-        model.addAttribute("messages", user.getMessages());
-        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
+       model.addAttribute("userDTO", user.toDTO(currentUser));
+        if (filter.isEmpty()){
+            model.addAttribute("messages", user.getMessages());
+        } else {
+            model.addAttribute("messages", user.getMessages()
+                    .stream()
+                    .filter(x->x.getTag().equalsIgnoreCase(filter))
+                    .collect(Collectors.toSet()));
+        }
         return "home";
     }
 }

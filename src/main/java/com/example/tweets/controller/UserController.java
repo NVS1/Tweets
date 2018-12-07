@@ -6,6 +6,7 @@ import com.example.tweets.util.ControllerUtil;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -24,6 +27,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping("/profile")
     public String profile (Model model, @AuthenticationPrincipal User user){
         model.addAttribute("user", user);
@@ -69,5 +73,40 @@ public class UserController {
             userService.unsubscribe(user, currentUser);
         }
         return "redirect:/tweets/"+user.getId();
+    }
+
+    @GetMapping("search")
+    public String userSearch (@RequestParam String name,
+                              Model model,
+                              @AuthenticationPrincipal User user){
+
+        List<User> users = userService.findByName(name);
+        users.remove(user);
+        model.addAttribute("users", users.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        return "users";
+    }
+
+    @GetMapping("profile/subscriptions/{id}")
+    public String subscriptions (@PathVariable("id") User user,
+                                 Model model,
+                                 @AuthenticationPrincipal User currentUser){
+        model.addAttribute("users", user.getSubscriptions()
+                .stream()
+                .map(x->x.toDTO(currentUser))
+                .collect(Collectors.toList()));
+        return "users";
+    }
+
+    @GetMapping("profile/subscribers/{id}")
+    public String subscribers (@PathVariable("id") User user,
+                               Model model,
+                               @AuthenticationPrincipal User currentUser){
+
+        model.addAttribute("users", user.getSubscribers()
+                .stream()
+                .map(x->x.toDTO(currentUser))
+                .collect(Collectors.toList()));
+        model.addAttribute("isSubscribers", true);
+        return "users";
     }
 }

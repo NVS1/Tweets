@@ -1,5 +1,6 @@
 package com.example.tweets.domain;
 
+import com.example.tweets.domain.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -177,6 +178,21 @@ public class User implements UserDetails {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public UserDTO toDTO (User currentUser){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(id);
+        userDTO.setEmail(email);
+        userDTO.setCurrentUser(this.equals(currentUser));
+        userDTO.setName(name);
+        userDTO.setPassword(password);
+        userDTO.setSubscriber(this.subscribers.contains(currentUser));
+        userDTO.setUsername(username);
+        userDTO.setSubscribersCount(subscribers.size());
+        userDTO.setSubscriptionsCount(subscriptions.size());
+        userDTO.setAvatarId(avatar!=null?avatar.getId():null);
+        return userDTO;
     }
 
     @Override

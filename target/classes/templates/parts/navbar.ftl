@@ -9,7 +9,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="/tweets/${userId}">My tweets</a>
+                <a class="nav-link" href="/tweets/${userId}">Home</a>
             </li>
             <#if isAdmin>
                 <li class="nav-item">
@@ -17,8 +17,8 @@
                 </li>
             </#if>
         </ul>
-        <form method="get" action="/" class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Search by Tag">
+        <form method="get" action="/search" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" name="name" placeholder="Name">
             <button class="btn btn-success my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
         </form>
         <div class="btn-group" role="group">

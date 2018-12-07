@@ -177,4 +177,8 @@ public class UserService implements UserDetailsService {
             userRepo.save(user);
         }
     }
+
+    public List<User> findByName(String name) {
+        return userRepo.findByNameStartingWith(name);
+    }
 }
