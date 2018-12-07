@@ -1,30 +1,6 @@
 <#import "parts/common.ftl" as c>
 <#import "parts/searchTweet.ftl" as s>
 <@c.page>
-<ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Tweets</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Profile</a>
-    </li>
-</ul>
-<div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-        <div class="form-group mt-3">
-            <div class="form-group">
-             <#if userDTO.currentUser>
-              <#include "parts/addTweet.ftl">
-             </#if>
-                <@s.search "/tweets/${userDTO.id}"/>
-            </div>
-            <div class="form-group">
-            <#include "parts/tweetList.ftl">
-            </div>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-
         <div class="container my-4">
             <div class="row">
                 <div class="col">
@@ -86,7 +62,20 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group mt-3">
+                        <div class="form-group">
+                        <#if userDTO.currentUser>
+                            <#include "parts/addTweet.ftl">
+                        </#if>
+                        <@s.search "/tweets/${userDTO.id}"/>
+                        </div>
+                        <div class="form-group">
+                        <#include "parts/tweetList.ftl">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 </@c.page>

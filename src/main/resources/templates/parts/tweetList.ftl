@@ -16,7 +16,9 @@
             </div>
             <div class="card-footer text-muted">
                 <div class="row">
-                    <a href="/tweets/${m.author.id}" class="col-sm-6 mr-auto">${m.authorName}</a>
+                    <a href="/tweets/${m.author.id}" class="col-sm-6 mr-auto">
+                        ${m.authorName}
+                    </a>
                     <a class="col-sm-2 mr-auto" href="#">
                     <#if true>
                         <i class="fas fa-thumbs-up"></i>
