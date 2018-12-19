@@ -54,4 +54,9 @@ public class MainController {
     public String getHomePage (){
         return "home";
     }
+
+    @GetMapping("/about")
+    public String info (){
+        return "about";
+    }
 }

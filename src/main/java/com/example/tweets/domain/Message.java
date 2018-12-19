@@ -1,10 +1,13 @@
 package com.example.tweets.domain;
 
+import com.example.tweets.domain.dto.MessageDTO;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Message  {
@@ -23,9 +26,22 @@ public class Message  {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
+    @ManyToMany
+    @JoinTable(name = "messages_likes",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> likes = new HashSet<>();
 
     public Message() {
 
+    }
+
+    public Set<User> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<User> likes) {
+        this.likes = likes;
     }
 
     public Long getId() {
@@ -82,5 +98,18 @@ public class Message  {
 
     public Long getImageId(){
         return image.getId();
+    }
+    public MessageDTO toDTO (User user){
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setId(id);
+        messageDTO.setText(text);
+        messageDTO.setTag(tag);
+        messageDTO.setDate(date);
+        messageDTO.setAuthorId(author.getId());
+        messageDTO.setAuthorName(author.getName());
+        messageDTO.setImageId(image!=null? image.getId():null);
+        messageDTO.setLikes(likes.size());
+        messageDTO.setLiked(likes.contains(user));
+        return messageDTO;
     }
 }

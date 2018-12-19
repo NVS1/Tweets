@@ -8,7 +8,7 @@
                     <i class="col" >${m.date?string('dd.MM.yyyy HH:mm')}</i>
                 </div>
             </div>
-            <#if m.image??>
+            <#if m.imageId??>
                 <img class="card-img-top" src="/image/${m.imageId}">
             </#if>
             <div class="card-body">
@@ -16,17 +16,17 @@
             </div>
             <div class="card-footer text-muted">
                 <div class="row">
-                    <a href="/tweets/${m.author.id}" class="col-sm-6 mr-auto">
+                    <a href="/tweets/${m.authorId}" class="col-sm-6 mr-auto">
                         ${m.authorName}
                     </a>
-                    <a class="col-sm-2 mr-auto" href="#">
-                    <#if true>
-                        <i class="fas fa-thumbs-up"></i>
+                    <a class="col-sm-2 mr-auto" href="/like/${m.id}?url=${springMacroRequestContext.getRequestUri()}">
+                    <#if m.liked>
+                        <i class="fas fa-thumbs-up">${m.likes}</i>
                     <#else >
-                        <i class="far fa-thumbs-up"></i>
+                      <i class="far fa-thumbs-up">${m.likes}</i>
                     </#if>
                     </a>
-                    <#if m.author.id==userId>
+                    <#if m.authorId==userId>
                         <a href="#" class="col-sm-2" data-toggle="modal" data-target="#editModal${m.id}"><i class="far fa-edit"></i></a>
                         <a href="/tweet/delete/${m.id}?url=${springMacroRequestContext.getRequestUri()}" class="col-sm-2"><i class="far fa-trash-alt"></i></a>
                     </#if>

@@ -2,6 +2,7 @@ package com.example.tweets.service;
 
 import com.example.tweets.domain.Image;
 import com.example.tweets.domain.Message;
+import com.example.tweets.domain.User;
 import com.example.tweets.repos.ImageRepo;
 import com.example.tweets.repos.MessageRepo;
 import org.springframework.stereotype.Service;
@@ -47,5 +48,14 @@ public class MessageService {
             imageRepo.delete(message.getImage());
             message.setImage(null);
         }
+    }
+
+    public void like(User user, Message message) {
+        if (message.getLikes().contains(user)){
+            message.getLikes().remove(user);
+        } else {
+            message.getLikes().add(user);
+        }
+        messageRepo.save(message);
     }
 }

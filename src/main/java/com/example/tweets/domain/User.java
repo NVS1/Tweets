@@ -39,7 +39,8 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "subscriptions"),
             inverseJoinColumns = @JoinColumn(name = "subscribers"))
     private Set<User> subscribers = new HashSet<>();
-
+    @ManyToMany(mappedBy = "likes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> likedMessages = new HashSet<>();
     @ManyToMany
     @JoinTable(name = "subscriber_subscriptions",
             joinColumns = @JoinColumn(name = "subscribers"),
@@ -47,6 +48,14 @@ public class User implements UserDetails {
     private Set<User> subscriptions = new HashSet<>();
 
     public User() {
+    }
+
+    public Set<Message> getLikedMessages() {
+        return likedMessages;
+    }
+
+    public void setLikedMessages(Set<Message> likedMessages) {
+        this.likedMessages = likedMessages;
     }
 
     public Image getAvatar() {

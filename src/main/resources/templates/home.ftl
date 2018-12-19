@@ -66,9 +66,6 @@
                 <div class="col">
                     <div class="form-group mt-3">
                         <div class="form-group">
-                        <#if userDTO.currentUser>
-                            <#include "parts/addTweet.ftl">
-                        </#if>
                         <@s.search "/tweets/${userDTO.id}"/>
                         </div>
                         <div class="form-group">

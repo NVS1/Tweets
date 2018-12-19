@@ -5,7 +5,6 @@ import com.example.tweets.domain.Message;
 import com.example.tweets.domain.User;
 import com.example.tweets.service.MessageService;
 import com.example.tweets.util.ControllerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,18 +29,24 @@ import java.util.stream.Collectors;
 
 @Controller
 public class MessageController {
-    @Autowired
-    private MessageService messageService;
+
+    private final MessageService messageService;
+
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @GetMapping("/")
-    public String main(Model model, @RequestParam(required = false, defaultValue = "") String filter) {
+    public String main(Model model,
+                       @RequestParam(required = false, defaultValue = "") String filter,
+                       @AuthenticationPrincipal User user) {
         List<Message> messages;
         if (!filter.isEmpty()){
             messages = messageService.findByTag(filter);
         } else {
             messages = messageService.findAll();
         }
-        model.addAttribute("messages", messages);
+        model.addAttribute("messages", messages.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
         return "index";
     }
 
@@ -62,7 +67,7 @@ public class MessageController {
             model.addAttribute("message", null);
             messageService.save(message);
         }
-        model.addAttribute("messages", messageService.findAll());
+        model.addAttribute("messages", messageService.findAll().stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
         return "index";
     }
 
@@ -131,13 +136,24 @@ public class MessageController {
 
        model.addAttribute("userDTO", user.toDTO(currentUser));
         if (filter.isEmpty()){
-            model.addAttribute("messages", user.getMessages());
+            model.addAttribute("messages", user.getMessages().stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
         } else {
             model.addAttribute("messages", user.getMessages()
                     .stream()
                     .filter(x->x.getTag().equalsIgnoreCase(filter))
+                    .map(x->x.toDTO(user))
                     .collect(Collectors.toSet()));
         }
         return "home";
     }
+
+    @GetMapping("/like/{id}")
+    public String like (@RequestParam("url") String url,
+                        @AuthenticationPrincipal User user,
+                        @PathVariable("id") Message message){
+
+        messageService.like(user, message);
+        return "redirect:"+url;
+    }
+
 }
