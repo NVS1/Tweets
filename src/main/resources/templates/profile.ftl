@@ -8,10 +8,10 @@
 </div>
 </#if>
 <h5>${user.name}</h5>
+<div class="form-group">
+    <label>${user.username}</label>
+</div>
     <form method="post" action="/profile">
-        <div class="form-group">
-            <label>${user.username}</label>
-        </div>
         <input type="hidden" name="username" value="${user.username}">
         <@ep.editProfile/>
         <div class="form-group">

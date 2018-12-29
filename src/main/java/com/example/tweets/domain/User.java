@@ -65,9 +65,6 @@ public class User implements UserDetails {
     public void setAvatar(Image avatar) {
         this.avatar = avatar;
     }
-    public Long getAvatarId (){
-        return avatar.getId();
-    }
 
     public Set<User> getSubscribers() {
         return subscribers;

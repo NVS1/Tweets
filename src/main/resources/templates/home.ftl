@@ -21,6 +21,9 @@
                                 <img class="card-img-top" src="/static/avatar.png" alt="Card image cap">
                             </#if>
                         </#if>
+                        <#if userDTO.currentUser>
+                            <a href="/avatar/delete?url=${springMacroRequestContext.getRequestUri()}" class="card-link btn-outline-info">remove avatar</a>
+                        </#if>
                         <div class="card-body">
                             <div class="form group mt-3">
                                 <div class="form-group">

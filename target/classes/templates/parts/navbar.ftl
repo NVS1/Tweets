@@ -16,6 +16,9 @@
                     <a class="nav-link" href="/admin/users">User List</a>
                 </li>
             </#if>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">About</a>
+            </li>
         </ul>
         <form method="get" action="/search" class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" name="name" placeholder="Name">
@@ -23,7 +26,7 @@
         </form>
         <div class="btn-group" role="group">
             <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                ${name}
+                ${fullName}
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                 <a class="dropdown-item" href="/profile">Edit profile</a>

@@ -3,6 +3,7 @@ package com.example.tweets.service;
 import com.example.tweets.domain.Image;
 import com.example.tweets.domain.Role;
 import com.example.tweets.domain.User;
+import com.example.tweets.repos.ImageRepo;
 import com.example.tweets.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,9 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private ImageRepo imageRepo;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -48,6 +53,7 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll();
     }
 
+    @Transactional
     public boolean addUser(User user) {
         User userDb = userRepo.findByUsername(user.getUsername());
         if (userDb != null) {
@@ -75,6 +81,7 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
+    @Transactional
     public boolean updateUser(User userEdit,
                               Map<String, String> form,
                               String active,
@@ -131,6 +138,7 @@ public class UserService implements UserDetailsService {
         userRepo.delete(user);
     }
 
+    @Transactional
     public boolean updateProfile(User user, String name, String email, String password) {
         user.setName(name);
         user.setEmail(email);
@@ -153,6 +161,7 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
+    @Transactional
     public boolean setAvatar(MultipartFile file, User user) throws IOException {
         if (file != null && !file.isEmpty()) {
             Image avatar = new Image();
@@ -165,12 +174,15 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
+    @Transactional
     public void subscribe(User user, User currentUser) {
         if (!currentUser.equals(user)) {
             user.getSubscribers().add(currentUser);
             userRepo.save(user);
         }
     }
+
+    @Transactional
     public void unsubscribe(User user, User currentUser) {
         if (!currentUser.equals(user)) {
             user.getSubscribers().remove(currentUser);
@@ -180,5 +192,12 @@ public class UserService implements UserDetailsService {
 
     public List<User> findByName(String name) {
         return userRepo.findByNameStartingWith(name);
+    }
+
+    public void deleteAvatar(User user) {
+       if (user.getAvatar()!=null){
+           imageRepo.delete(user.getAvatar());
+           user.setAvatar(null);
+       }
     }
 }

@@ -6,7 +6,6 @@ import com.example.tweets.util.ControllerUtil;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,10 +58,18 @@ public class UserController {
     public String setAvatar (@AuthenticationPrincipal User user,
                              @RequestParam(value = "file", required = false) MultipartFile file,
                              @RequestParam String url) throws IOException {
-        System.out.println(file.getOriginalFilename());
         userService.setAvatar(file, user);
         return "redirect:"+url;
     }
+
+    @GetMapping("/avatar/delete")
+    public String deleteAvatar (@RequestParam String url,
+                                @AuthenticationPrincipal User user){
+        userService.deleteAvatar(user);
+        userService.save(user);
+        return "redirect:"+url;
+    }
+
     @GetMapping("user/{subscribe}/{id}")
     public String subscribe (@PathVariable String subscribe,
                              @PathVariable("id") User user,
