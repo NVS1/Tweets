@@ -66,7 +66,6 @@ public class UserController {
     public String deleteAvatar (@RequestParam String url,
                                 @AuthenticationPrincipal User user){
         userService.deleteAvatar(user);
-        userService.save(user);
         return "redirect:"+url;
     }
 

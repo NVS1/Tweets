@@ -31,8 +31,7 @@ public class User implements UserDetails {
     private String activationCode;
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Message> messages;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "avatar_id")
+    @OneToOne(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Image avatar;
     @ManyToMany
     @JoinTable(name = "subscriber_subscriptions",
@@ -197,7 +196,9 @@ public class User implements UserDetails {
         userDTO.setUsername(username);
         userDTO.setSubscribersCount(subscribers.size());
         userDTO.setSubscriptionsCount(subscriptions.size());
-        userDTO.setAvatarId(avatar!=null?avatar.getId():null);
+        if (this.avatar!=null){
+            userDTO.setAvatarId(this.avatar.getId());
+        }
         return userDTO;
     }
 

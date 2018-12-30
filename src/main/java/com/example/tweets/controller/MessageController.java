@@ -42,12 +42,26 @@ public class MessageController {
                        @AuthenticationPrincipal User user) {
         List<Message> messages;
         if (!filter.isEmpty()){
+            messages = messageService.findByTagFollowMessages(user,filter);
+        } else {
+            messages = messageService.findFollowMessages(user);
+        }
+        model.addAttribute("messages", messages.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        return "index";
+    }
+
+    @GetMapping("/all")
+    public String follow (Model model,
+                          @RequestParam(required = false, defaultValue = "") String filter,
+                          @AuthenticationPrincipal User user){
+        List<Message> messages;
+        if (!filter.isEmpty()){
             messages = messageService.findByTag(filter);
         } else {
             messages = messageService.findAll();
         }
         model.addAttribute("messages", messages.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
-        return "index";
+        return "allTweets";
     }
 
     @PostMapping("/")
@@ -67,7 +81,7 @@ public class MessageController {
             model.addAttribute("message", null);
             messageService.save(message);
         }
-        model.addAttribute("messages", messageService.findAll().stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        model.addAttribute("messages", messageService.findFollowMessages(user).stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
         return "index";
     }
 

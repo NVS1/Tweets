@@ -10,6 +10,17 @@ public class Image {
     @Column(columnDefinition = "LONGBLOB", length = 1024*1024*50)
     private byte[] content;
     private String originalFileName;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 
     public Long getId() {
         return id;

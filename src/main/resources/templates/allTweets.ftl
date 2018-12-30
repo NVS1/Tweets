@@ -4,14 +4,13 @@
 <@c.page>
 <ul class="nav nav-tabs my-3">
     <li class="nav-item">
-        <a class="nav-link active" href="/">Follow</a>
+        <a class="nav-link" href="/">Follow</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/all">All</a>
+        <a class="nav-link active" href="/all">All</a>
     </li>
 </ul>
     <@s.search "/"/>
     <#include "parts/addTweet.ftl"/>
     <#include "parts/tweetList.ftl">
 </@c.page>
-

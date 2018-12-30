@@ -167,6 +167,7 @@ public class UserService implements UserDetailsService {
             Image avatar = new Image();
             avatar.setContent(file.getBytes());
             avatar.setOriginalFileName(file.getOriginalFilename());
+            avatar.setOwner(user);
             user.setAvatar(avatar);
             userRepo.save(user);
             return true;
@@ -194,10 +195,12 @@ public class UserService implements UserDetailsService {
         return userRepo.findByNameStartingWith(name);
     }
 
-    public void deleteAvatar(User user) {
-       if (user.getAvatar()!=null){
-           imageRepo.delete(user.getAvatar());
+    @Transactional
+    public void deleteAvatar(User currentUser) {
+        User user = userRepo.findById(currentUser.getId()).get();
+        if (user.getAvatar()!=null){
            user.setAvatar(null);
-       }
+           userRepo.save(user);
+        }
     }
 }
