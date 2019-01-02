@@ -5,6 +5,7 @@
 <div class="collapse<#if message??>.show<</#if>" id="collapseExample">
     <div class="form-group mt-3">
         <form method="post" action="/" enctype="multipart/form-data">
+            <input type="hidden" name="url" value="${springMacroRequestContext.getRequestUri()}">
             <div class="form-group">
                 <input type="text" value="<#if message??>${message.text}</#if>" name="text" placeholder="Enter your message" class="form-control ${(textError??)?string('is-invalid', '')}">
                 <#if textError??>

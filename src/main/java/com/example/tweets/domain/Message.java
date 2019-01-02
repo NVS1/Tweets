@@ -97,19 +97,7 @@ public class Message  {
     }
 
     public Long getImageId(){
-        return image.getId();
+        return image!=null?image.getId():null;
     }
-    public MessageDTO toDTO (User user){
-        MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setId(id);
-        messageDTO.setText(text);
-        messageDTO.setTag(tag);
-        messageDTO.setDate(date);
-        messageDTO.setAuthorId(author.getId());
-        messageDTO.setAuthorName(author.getName());
-        messageDTO.setImageId(image!=null? image.getId():null);
-        messageDTO.setLikes(likes.size());
-        messageDTO.setLiked(likes.contains(user));
-        return messageDTO;
-    }
+
 }

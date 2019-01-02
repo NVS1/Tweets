@@ -1,5 +1,7 @@
 package com.example.tweets.domain.dto;
 
+import com.example.tweets.domain.Message;
+
 import java.util.Date;
 
 public class MessageDTO {
@@ -10,8 +12,23 @@ public class MessageDTO {
     private Long authorId;
     private String authorName;
     private Long imageId;
-    private Integer likes;
+    private Long likes;
     private boolean isLiked;
+
+    public MessageDTO(Message message, Long likes, boolean isLiked) {
+        this.id = message.getId();
+        this.text = message.getText();
+        this.tag= message.getTag();
+        this.date = message.getDate();
+        this.authorId = message.getAuthor().getId();
+        this.authorName = message.getAuthorName();
+        this.imageId = message.getImageId();
+        this.likes = likes;
+        this.isLiked = isLiked;
+    }
+
+    public MessageDTO() {
+    }
 
     public String getAuthorName() {
         return authorName;
@@ -77,11 +94,11 @@ public class MessageDTO {
         this.imageId = imageId;
     }
 
-    public Integer getLikes() {
+    public Long getLikes() {
         return likes;
     }
 
-    public void setLikes(Integer likes) {
+    public void setLikes(Long likes) {
         this.likes = likes;
     }
 }

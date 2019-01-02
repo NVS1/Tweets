@@ -3,6 +3,10 @@ package com.example.tweets.controller;
 import com.example.tweets.domain.User;
 import com.example.tweets.service.UserService;
 import com.example.tweets.util.ControllerUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -84,11 +87,12 @@ public class UserController {
     @GetMapping("search")
     public String userSearch (@RequestParam String name,
                               Model model,
-                              @AuthenticationPrincipal User user){
+                              @AuthenticationPrincipal User user,
+                              @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable){
 
-        List<User> users = userService.findByName(name);
-        users.remove(user);
+        Page<User> users = userService.findByName(name, pageable, user.getId());
         model.addAttribute("users", users.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        model.addAttribute("url","search");
         return "users";
     }
 

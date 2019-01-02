@@ -7,6 +7,8 @@ import com.example.tweets.repos.ImageRepo;
 import com.example.tweets.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -191,16 +193,16 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<User> findByName(String name) {
-        return userRepo.findByNameStartingWith(name);
+    public Page<User> findByName(String name, Pageable pageable, Long id) {
+        return userRepo.findByNameStartingWithAndIdNot(name, pageable, id);
     }
 
     @Transactional
     public void deleteAvatar(User currentUser) {
         User user = userRepo.findById(currentUser.getId()).get();
         if (user.getAvatar()!=null){
-           user.setAvatar(null);
-           userRepo.save(user);
+            user.setAvatar(null);
+            userRepo.save(user);
         }
     }
 }

@@ -3,15 +3,16 @@ package com.example.tweets.service;
 import com.example.tweets.domain.Image;
 import com.example.tweets.domain.Message;
 import com.example.tweets.domain.User;
+import com.example.tweets.domain.dto.MessageDTO;
 import com.example.tweets.repos.ImageRepo;
 import com.example.tweets.repos.MessageRepo;
 import com.example.tweets.repos.UserRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class MessageService {
@@ -29,17 +30,14 @@ public class MessageService {
         return messageRepo.save(message);
     }
 
-    public List<Message> findAll (){
-        List<Message> all = messageRepo.findAll();
-        all.sort(Comparator.comparing(Message::getDate).reversed());
-        return all;
+    public Page<MessageDTO> findAll (Pageable pageable, User user){
+        return  messageRepo.findAll(pageable, user);
     }
 
-    public List<Message> findByTag (String tag){
-        List<Message> byTag = messageRepo.findByTag(tag);
-        byTag.sort(Comparator.comparing(Message::getDate).reversed());
-        return byTag;
+    public Page<MessageDTO> findByTag (String tag, Pageable pageable, User user){
+        return messageRepo.findByTag(tag, pageable, user);
     }
+
     public Image getImageById (Long id){
         return imageRepo.getOne(id);
     }
@@ -65,20 +63,24 @@ public class MessageService {
     }
 
     @Transactional
-    public List<Message> findByTagFollowMessages(User user, String filter) {
+    public Page<MessageDTO> findByTagFollowMessages(User user, String filter, Pageable pageable) {
         Set<User> subscriptions = userRepo.findSubscriptions(user.getId());
         subscriptions.add(user);
-        List<Message> followMessages = messageRepo.findByAuthorInAndTag(subscriptions, filter);
-        followMessages.sort(Comparator.comparing(Message::getDate).reversed());
-        return followMessages;
+        return messageRepo.findByAuthorInAndTag(subscriptions, filter, pageable, user);
     }
 
     @Transactional
-    public List<Message> findFollowMessages(User user) {
+    public Page<MessageDTO> findFollowMessages(User user, Pageable pageable) {
         Set<User> subscriptions = userRepo.findSubscriptions(user.getId());
         subscriptions.add(user);
-        List<Message> followMessages = messageRepo.findByAuthorIn(subscriptions);
-        followMessages.sort(Comparator.comparing(Message::getDate).reversed());
-        return followMessages;
+        return messageRepo.findByAuthorIn(subscriptions, pageable, user);
+    }
+
+    public Page<MessageDTO> findByAuthor (User user, Pageable pageable){
+        return messageRepo.findByAuthorIn(Collections.singleton(user), pageable, user);
+    }
+
+    public Page<MessageDTO> findByAuthorAndTag (User user, Pageable pageable, String tag){
+        return messageRepo.findByAuthorInAndTag(Collections.singleton(user), tag, pageable, user);
     }
 }

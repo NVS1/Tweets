@@ -3,8 +3,13 @@ package com.example.tweets.controller;
 import com.example.tweets.domain.Image;
 import com.example.tweets.domain.Message;
 import com.example.tweets.domain.User;
+import com.example.tweets.domain.dto.MessageDTO;
 import com.example.tweets.service.MessageService;
 import com.example.tweets.util.ControllerUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,9 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class MessageController {
@@ -37,30 +40,34 @@ public class MessageController {
     }
 
     @GetMapping("/")
-    public String main(Model model,
+    public String follow(Model model,
                        @RequestParam(required = false, defaultValue = "") String filter,
-                       @AuthenticationPrincipal User user) {
-        List<Message> messages;
+                       @AuthenticationPrincipal User user,
+                       @PageableDefault(sort = {"date"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<MessageDTO> page;
         if (!filter.isEmpty()){
-            messages = messageService.findByTagFollowMessages(user,filter);
+            page = messageService.findByTagFollowMessages(user,filter, pageable);
         } else {
-            messages = messageService.findFollowMessages(user);
+            page = messageService.findFollowMessages(user, pageable);
         }
-        model.addAttribute("messages", messages.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/");
         return "index";
     }
 
     @GetMapping("/all")
-    public String follow (Model model,
+    public String allTweets (Model model,
                           @RequestParam(required = false, defaultValue = "") String filter,
-                          @AuthenticationPrincipal User user){
-        List<Message> messages;
+                          @AuthenticationPrincipal User user,
+                          @PageableDefault(sort = {"date"}, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<MessageDTO> page;
         if (!filter.isEmpty()){
-            messages = messageService.findByTag(filter);
+            page = messageService.findByTag(filter, pageable, user);
         } else {
-            messages = messageService.findAll();
+            page = messageService.findAll(pageable, user);
         }
-        model.addAttribute("messages", messages.stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/all");
         return "allTweets";
     }
 
@@ -69,20 +76,26 @@ public class MessageController {
                              BindingResult bindingResult,
                              Model model,
                              @AuthenticationPrincipal User user,
-                             @RequestParam(value = "file", required = false)MultipartFile file) {
+                             @RequestParam(value = "file", required = false)MultipartFile file,
+                             @PageableDefault(sort = {"date"}, direction = Sort.Direction.DESC) Pageable pageable,
+                             @RequestParam String url) {
         message.setAuthor(user);
         message.setDate(new Date());
         if (bindingResult.hasErrors()){
             Map<String, String> errorMap = ControllerUtil.getErrors(bindingResult);
             model.mergeAttributes(errorMap);
             model.addAttribute("message", message);
+            model.addAttribute("url", "/");
+            model.addAttribute("page", messageService.findFollowMessages(user,pageable));
+            return "index";
         } else {
             uploadImage(message, file);
             model.addAttribute("message", null);
             messageService.save(message);
         }
-        model.addAttribute("messages", messageService.findFollowMessages(user).stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
-        return "index";
+        model.addAttribute("url", "/");
+        model.addAttribute("page", messageService.findFollowMessages(user,pageable));
+        return "redirect:"+url;
     }
 
     private void uploadImage(Message message, MultipartFile file) {
@@ -146,18 +159,18 @@ public class MessageController {
     public String userTweets (@PathVariable("id") User user,
                               @AuthenticationPrincipal User currentUser,
                               Model model,
-                              @RequestParam(required = false, defaultValue = "") String filter){
+                              @RequestParam(required = false, defaultValue = "") String filter,
+                              @PageableDefault(sort = {"date"}, direction = Sort.Direction.DESC) Pageable pageable){
 
-       model.addAttribute("userDTO", user.toDTO(currentUser));
-        if (filter.isEmpty()){
-            model.addAttribute("messages", user.getMessages().stream().map(x->x.toDTO(user)).collect(Collectors.toList()));
-        } else {
-            model.addAttribute("messages", user.getMessages()
-                    .stream()
-                    .filter(x->x.getTag().equalsIgnoreCase(filter))
-                    .map(x->x.toDTO(user))
-                    .collect(Collectors.toSet()));
+        if (user!=null){
+            model.addAttribute("userDTO", user.toDTO(currentUser));
         }
+        if (filter.isEmpty()){
+            model.addAttribute("page", messageService.findByAuthor(user,pageable));
+        } else {
+            model.addAttribute("page", messageService.findByAuthorAndTag(user, pageable, filter));
+        }
+        model.addAttribute("url", "/tweets/{id}");
         return "home";
     }
 
