@@ -1,6 +1,5 @@
 package com.example.tweets.domain;
 
-import com.example.tweets.domain.dto.MessageDTO;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;

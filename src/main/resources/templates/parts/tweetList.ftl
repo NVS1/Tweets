@@ -1,6 +1,8 @@
 <#include "security.ftl">
 <#import "pager.ftl" as p>
-<@p.pager url page/>
+<#if page.getTotalElements() gt 10>
+    <@p.pager url page/>
+</#if>
 <div class="card-columns">
     <#list page.content as m>
         <div class="card bg-light my-3">

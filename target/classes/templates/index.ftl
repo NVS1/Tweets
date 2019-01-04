@@ -1,5 +1,6 @@
 <#import "parts/common.ftl" as c>
 <#import "parts/searchTweet.ftl" as s>
+<#import "parts/pager.ftl" as p>
 <#include "parts/security.ftl">
 <@c.page>
 <ul class="nav nav-tabs my-3">
